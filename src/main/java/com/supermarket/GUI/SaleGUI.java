@@ -447,13 +447,13 @@ public class SaleGUI extends SalePanel {
     }
 
     private void payBill() {
-        if (Objects.equals(jTextFieldBill.get(4).getText(), ""))  {
+        if (Objects.equals(jTextFieldBill.get(3).getText(), ""))  {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập số tiền nhận và nhấn Enter.",
                 "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (jTextFieldBill.get(4).getText().contains("-"))  {
+        if (jTextFieldBill.get(3).getText().contains("-"))  {
             JOptionPane.showMessageDialog(null, "Chưa đủ tiền thanh toán.",
                 "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
