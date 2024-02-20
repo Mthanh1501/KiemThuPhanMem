@@ -18,7 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.util.Pair;
+import com.supermarket.utils.VNString;
 
 public class FormAddStaffGUI extends DialogForm{
     private final StaffBLL staffBLL = new StaffBLL();
@@ -32,7 +33,7 @@ public class FormAddStaffGUI extends DialogForm{
     private JButton buttonCancel;
     private JButton buttonAdd;
     private boolean flag;
-
+    public boolean inputEntered;
     public FormAddStaffGUI() {
         super();
         super.setTitle("Thêm nhân viên");
@@ -42,6 +43,7 @@ public class FormAddStaffGUI extends DialogForm{
     }
 
     public void init() {
+        inputEntered = false;
         dataTable = new DataTable(new Object[][] {}, new String[] {}, e -> {});
         formDetail = new RoundedPanel();
         attributeStaff = new ArrayList<>();
@@ -93,9 +95,54 @@ public class FormAddStaffGUI extends DialogForm{
                 textField.setFont((new Font("FlatLaf.style", Font.BOLD, 14)));
                 jComponentStaff.add(textField);
                 formDetail.add(textField, "wrap");
+                // Thêm sự kiện FocusListener vào mỗi ô nhập liệu
+                textField.addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (!textField.getText().isEmpty()) {
+                            inputEntered = true;
+                        }
+                        // In ra command tương ứng khi người dùng click vào ô để nhập thông tin
+                        if (string.equals("Tên nhân viên:")) {
+                            System.out.println("Bạn đang nhập tên");
+                        } else if (string.equals("Email:")) {
+                            System.out.println("Bạn đang nhập email");
+                        } else if (string.equals("Số điện thoại:")) {
+                            System.out.println("Bạn đang nhập số điện thoại");
+                        } // Thêm các trường hợp khác nếu cần
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        if(inputEntered){
+                        // Kiểm tra lỗi và hiển thị thông báo nếu cần khi ô mất focus
+                        if (string.equals("Tên nhân viên:")) {
+                            Pair<Boolean, String> nameValidation = validateName(textField.getText());
+                            if (!nameValidation.getKey()) {
+                                JOptionPane.showMessageDialog(null, nameValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else if (string.equals("Số điện thoại:")) {
+                            Pair<Boolean, String> phoneValidation = validatePhone(textField.getText());
+                            if (!phoneValidation.getKey()) {
+                                JOptionPane.showMessageDialog(null, phoneValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else if (string.equals("Email:")) {
+                            Pair<Boolean, String> emailValidation = validateEmail(textField.getText());
+                            if (!emailValidation.getKey()) {
+                                JOptionPane.showMessageDialog(null, emailValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else if (string.equals("Ngày sinh:") || string.equals("Ngày vào làm:")) {
+                            // Kiểm tra lỗi ngày tháng nếu ô là ngày tháng
+                            try {
+                                Date.parseDate(textField.getText());
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, "Định dạng ngày không hợp lệ.", "Thông báo", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }} // Thêm các trường hợp khác nếu cần
+                    }
+                });
             }
         }
-
         buttonCancel.setPreferredSize(new Dimension(100,40));
         buttonCancel.setFont(new Font("FlatLaf.style", Font.BOLD, 15));
         buttonCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -160,6 +207,27 @@ public class FormAddStaffGUI extends DialogForm{
             return ""; // Trả về một giá trị mặc định hoặc xử lý đặc biệt cho các loại khác
         }
     }
+    private Pair<Boolean, String> validateName(String name) {
+        if (VNString.containsNumber(name))
+            return new Pair<>(false,"Tên nhân viên không được chứa số.");
+        if (VNString.containsSpecial(name))
+            return new Pair<>(false,"Tên nhân viên không được chứa ký tự đặc biệt.");
+        return new Pair<>(true,name);
+    }
+
+    private Pair<Boolean, String> validatePhone(String phone) {
+        if (!VNString.checkFormatPhone(phone))
+            return new Pair<>(false,"Số điện thoại nhân viên phải bắt đầu với \"0x\" hoặc \"+84x\" hoặc \"84x\" với \"x\" thuộc {3, 5, 7, 8, 9}.");
+        return new Pair<>(true,phone);
+    }
+
+    private Pair<Boolean, String> validateEmail(String email) {
+        if (VNString.containsUnicode(email))
+            return new Pair<>(false,"Email nhân viên không được chứa unicode.");
+        if (!VNString.checkFormatOfEmail(email))
+            return new Pair<>(false,"Email nhân viên phải theo định dạng (username@domain.name).");
+        return new Pair<>(true,email);
+    }
     private void addStaff() {
         for (int i = 0; i < jComponentStaff.size(); i++) {
             if (i != 6 && getValueFromComponent(jComponentStaff.get(i)).isEmpty()) {
@@ -169,17 +237,50 @@ public class FormAddStaffGUI extends DialogForm{
             }
         }
 
-        try{
+        try {
             int id = Integer.parseInt(getValueFromComponent(jComponentStaff.get(0)));
             String staffName = getValueFromComponent(jComponentStaff.get(1));
-            boolean gender = getValueFromComponent(jComponentStaff.get(2)).equals("Nam")?true:false;
+            boolean gender = getValueFromComponent(jComponentStaff.get(2)).equals("Nam");
             Date birthDate = Date.parseDate(getValueFromComponent(jComponentStaff.get(3)));
             String phoneNumber = getValueFromComponent(jComponentStaff.get(4));
             String address = getValueFromComponent(jComponentStaff.get(5));
             String email = getValueFromComponent(jComponentStaff.get(6));
             Date entry_date = Date.parseDate(getValueFromComponent(jComponentStaff.get(7)));
 
-            Staff staff = new Staff(id,staffName,gender,birthDate,phoneNumber,address,email,entry_date,false);
+            Pair<Boolean, String> nameValidation;
+            Pair<Boolean, String> phoneValidation;
+            Pair<Boolean, String> emailValidation;
+
+            // Kiểm tra từng điều kiện định dạng và hiển thị thông báo lỗi ngay khi gặp lỗi
+            nameValidation = validateName(staffName);
+            if (!nameValidation.getKey()) {
+                JOptionPane.showMessageDialog(null, nameValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                // In ra command phù hợp với dòng đang được nhập
+                System.out.println("Bạn đang nhập tên");
+            }
+
+            phoneValidation = validatePhone(phoneNumber);
+            if (!phoneValidation.getKey()) {
+                JOptionPane.showMessageDialog(null, phoneValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                // In ra command phù hợp với dòng đang được nhập
+                System.out.println("Bạn đang nhập số điện thoại");
+            }
+
+            emailValidation = validateEmail(email);
+            if (!emailValidation.getKey()) {
+                JOptionPane.showMessageDialog(null, emailValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                // In ra command phù hợp với dòng đang được nhập
+                System.out.println("Bạn đang nhập email");
+            }
+
+            // Nếu tất cả thông tin đều hợp lệ, tiếp tục thêm nhân viên
+            Staff staff = new Staff(id, staffName, gender, birthDate, phoneNumber, address, email, entry_date, false);
 
             String[] options = new String[]{"Huỷ", "Xác nhận"};
             int choice = JOptionPane.showOptionDialog(null, "Xác nhận thêm nhân viên?",
@@ -194,11 +295,11 @@ public class FormAddStaffGUI extends DialogForm{
                     SmallDialog.showResult(staffBLL.addStaff(staff).getValue());
                 }
             }
-        }
-        catch(Exception e){
-            if(e.getMessage().equals("Invalid day.")){
+        } catch (Exception e) {
+            if (e.getMessage().equals("Invalid day.")) {
                 JOptionPane.showMessageDialog(null, "Định dạng ngày không hợp lệ.", "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+
 }

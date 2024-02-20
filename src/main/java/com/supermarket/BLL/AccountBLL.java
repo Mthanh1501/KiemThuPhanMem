@@ -140,6 +140,19 @@ public class AccountBLL extends Manager<Account> {
             accounts = findObjectsBy(entry.getKey(), entry.getValue(), accounts);
         return accounts;
     }
+    public int getRoleIdByLoginCredentials(String username, String password) {
+        // Xác định tài khoản dựa trên thông tin đăng nhập
+        List<Account> accounts = accountDAL.searchAccounts("username = '" + username + "'", "password = '" + password + "'", "deleted = 0");
+
+        // Nếu tìm thấy tài khoản, trả về role_id của tài khoản đó
+        if (!accounts.isEmpty()) {
+            Account account = accounts.get(0);
+            return account.getRoleID();
+        }
+
+        // Trường hợp không tìm thấy tài khoản
+        return -1; // Hoặc giá trị khác nếu bạn muốn xử lý khác
+    }
 
 //    public boolean exists(Account account) {
 //        return !findAccountsBy(Map.of(

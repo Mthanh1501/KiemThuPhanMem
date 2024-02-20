@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.*;
 
 public class DiscountGUI extends Layout3 {
+    private RoleBLL roleBLL = new RoleBLL();
+    private AccountBLL accountBLL = new AccountBLL();
     private DiscountBLL discountBLL = new DiscountBLL();
     private Discount_detailBLL discount_detailBLL = new Discount_detailBLL();
     private ProductBLL productBLL = new ProductBLL();
@@ -49,6 +51,17 @@ public class DiscountGUI extends Layout3 {
     private JButton buttonAdd;
     private JButton buttonCancel;
     private static List<Integer> productIDInDiscount;
+    private boolean currentUserHasRole(int roleId) {
+        int currentRoleId = getCurrentUserRoleId(); // Sử dụng phương thức getRoleIdByLoginCredentials để lấy role_id của tài khoản đăng nhập
+        return currentRoleId == roleId;
+    }
+
+    private int getCurrentUserRoleId() {
+        // Gọi phương thức getRoleIdByLoginCredentials từ AccountBLL để lấy role_id của tài khoản đăng nhập
+        String username = ""; // Thay bằng tên người dùng của tài khoản đăng nhập
+        String password = ""; // Thay bằng mật khẩu của tài khoản đăng nhập
+        return new AccountBLL().getRoleIdByLoginCredentials(username, password);
+    }
     public DiscountGUI(List<Function> functions) {
         super();
         init(functions);
@@ -237,6 +250,11 @@ public class DiscountGUI extends Layout3 {
             }
         });
         containerDiscount.add(buttonAdd, "wrap");
+        if (currentUserHasRole(3)) { // Nếu người dùng không có vai trò có role_id = 3
+            buttonAdd.setVisible(false);
+            buttonCancel.setVisible(false);
+        }
+
     }
 
     private void addDiscount() {

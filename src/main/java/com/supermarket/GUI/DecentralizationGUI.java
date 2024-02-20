@@ -154,27 +154,32 @@ public class DecentralizationGUI extends Layout4 {
 
     private void deleteRole() {
         if (dataTable.getSelectedRow() == -1) {
-            JOptionPane.showMessageDialog(null, "Vui lòng chọn chức vụ cần xóa.",
-                "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn chức vụ cần xóa.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        int roleId = Integer.parseInt(model.getValueAt(dataTable.getSelectedRow(), 0).toString());
+
+        // Kiểm tra nếu roleId là 1 (Admin) thì hiển thị thông báo và không cho xóa
+        if (roleId == 1) {
+            JOptionPane.showMessageDialog(null, "Không thể xóa Admin", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         String[] options = new String[]{"Huỷ", "Xác nhận"};
-        int choice = JOptionPane.showOptionDialog(null, "Xác nhận xoá chức vụ?",
-            "Thông báo", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-        if (choice == 1) {
-            if (roleBLL.deleteRole(roleBLL.findRolesBy(Map.of("id", Integer.parseInt(model.getValueAt(dataTable.getSelectedRow(), 0).toString()))).get(0))) {
-                JOptionPane.showMessageDialog(null, "Xoá chức vụ thành công!",
-                    "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        int choice = JOptionPane.showOptionDialog(null, "Xác nhận xoá chức vụ?", "Thông báo", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
+        if (choice == 1) {
+            if (roleBLL.deleteRole(roleBLL.findRolesBy(Map.of("id", roleId)).get(0))) {
+                JOptionPane.showMessageDialog(null, "Xoá chức vụ thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 loadDataTable(roleBLL.getData());
             } else {
-                JOptionPane.showMessageDialog(null, "Xoá chức vụ không thành công!",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Xoá chức vụ không thành công!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+
 
     private void showDetailRole() {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();

@@ -6,15 +6,19 @@ import com.supermarket.GUI.SupplierGUI;
 import com.supermarket.GUI.components.DataTable;
 import com.supermarket.GUI.components.RoundedPanel;
 import com.supermarket.GUI.components.RoundedScrollPane;
+import com.supermarket.utils.VNString;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.util.Pair;
 
 public class FormAddSupplierGUI extends DialogForm{
     private final SupplierBLL supplierBLL = new SupplierBLL();
@@ -27,6 +31,7 @@ public class FormAddSupplierGUI extends DialogForm{
     private JButton buttonCancel;
     private JButton buttonAdd;
     private boolean flag;
+    public boolean inputEntered ;
 
     public FormAddSupplierGUI() {
         super();
@@ -34,9 +39,11 @@ public class FormAddSupplierGUI extends DialogForm{
         init();
         containerButton.setBackground(new Color(0xFFFFFF));
         setVisible(true);
+
     }
 
     public void init() {
+        inputEntered = false;
         dataTable = new DataTable(new Object[][] {}, new String[] {}, e -> {});
         formDetail = new RoundedPanel();
         attributeSupplier = new ArrayList<>();
@@ -45,7 +52,6 @@ public class FormAddSupplierGUI extends DialogForm{
         buttonAdd = new JButton("Thêm");
         scrollPaneDatatable = new RoundedScrollPane(containerTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPaneFormDetail = new RoundedScrollPane(formDetail, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
 
         scrollPaneDatatable.setPreferredSize(new Dimension(600, 700));
         leftContent.add(scrollPaneDatatable, BorderLayout.CENTER);
@@ -75,6 +81,48 @@ public class FormAddSupplierGUI extends DialogForm{
             textField.setFont((new Font("FlatLaf.style", Font.BOLD, 14)));
             jTextFieldSupplier.add(textField);
             formDetail.add(textField, "wrap");
+
+            // Thêm sự kiện FocusListener vào mỗi ô nhập liệu
+            textField.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    if (!textField.getText().isEmpty()) {
+                        inputEntered = true;
+                    }
+                    // In ra command tương ứng khi người dùng click vào ô để nhập thông tin
+                    if (string.equals("Tên nhà cung cấp:")) {
+                        System.out.println("Bạn đang nhập tên nhà cung cấp");
+                    } else if (string.equals("Email:")) {
+                        System.out.println("Bạn đang nhập email nhà cung cấp");
+                    } else if (string.equals("SĐT:")) {
+                        System.out.println("Bạn đang nhập số điện thoại nhà cung cấp");
+                    } else if (string.equals("Địa chỉ:")) {
+                        System.out.println("Bạn đang nhập địa chỉ nhà cung cấp");
+                    } // Thêm các trường hợp khác nếu cần
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    // Kiểm tra lỗi và hiển thị thông báo nếu cần khi ô mất focus
+                    if(inputEntered){
+                    if (string.equals("Tên nhà cung cấp:")) {
+                        Pair<Boolean, String> nameValidation = validateName(textField.getText());
+                        if (!nameValidation.getKey()) {
+                            JOptionPane.showMessageDialog(null, nameValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else if (string.equals("SĐT:")) {
+                        Pair<Boolean, String> phoneValidation = validatePhone(textField.getText());
+                        if (!phoneValidation.getKey()) {
+                            JOptionPane.showMessageDialog(null, phoneValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else if (string.equals("Email:")) {
+                        Pair<Boolean, String> emailValidation = validateEmail(textField.getText());
+                        if (!emailValidation.getKey()) {
+                            JOptionPane.showMessageDialog(null, emailValidation.getValue(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } // Thêm các trường hợp khác nếu cần
+                }}
+            });
         }
 
         buttonCancel.setPreferredSize(new Dimension(100,40));
@@ -106,7 +154,27 @@ public class FormAddSupplierGUI extends DialogForm{
             }
         });
         containerButton.add(buttonAdd);
+    }
+    private Pair<Boolean, String> validateName(String name) {
+        if (VNString.containsNumber(name))
+            return new Pair<>(false,"Tên ncc không được chứa số.");
+        if (VNString.containsSpecial(name))
+            return new Pair<>(false,"Tên ncc không được chứa ký tự đặc biệt.");
+        return new Pair<>(true,name);
+    }
 
+    private Pair<Boolean, String> validatePhone(String phone) {
+        if (!VNString.checkFormatPhone(phone))
+            return new Pair<>(false,"Số điện thoại ncc phải bắt đầu với \"0x\" hoặc \"+84x\" hoặc \"84x\" với \"x\" thuộc {3, 5, 7, 8, 9}.");
+        return new Pair<>(true,phone);
+    }
+
+    private Pair<Boolean, String> validateEmail(String email) {
+        if (VNString.containsUnicode(email))
+            return new Pair<>(false,"Email ncc không được chứa unicode.");
+        if (!VNString.checkFormatOfEmail(email))
+            return new Pair<>(false,"Email ncc phải theo định dạng (username@domain.name).");
+        return new Pair<>(true,email);
     }
 
     private void addSupplier() {
