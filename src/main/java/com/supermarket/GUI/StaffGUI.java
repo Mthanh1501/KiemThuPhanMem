@@ -122,7 +122,7 @@ public class StaffGUI extends Layout1 {
         }
 
         if (functions.stream().anyMatch(f -> f.getName().equals("Xuất"))) {
-            iconPDF.setIcon(new FlatSVGIcon("icon/pdf.svg"));
+            iconPDF.setIcon(new FlatSVGIcon("icon/export.svg"));
             iconPDF.setCursor(new Cursor(Cursor.HAND_CURSOR));
             iconPDF.addMouseListener(new MouseAdapter() {
                 @Override
