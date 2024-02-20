@@ -115,6 +115,7 @@ public class FormAddImportGUI extends DialogForm{
         buttonCancel.setPreferredSize(new Dimension(100,40));
         buttonCancel.setFont(new Font("FlatLaf.style", Font.BOLD, 15));
         buttonCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        buttonCancel.setVisible(false);
         buttonCancel.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 buttonCancel.setBackground(new Color(0xD54218));
