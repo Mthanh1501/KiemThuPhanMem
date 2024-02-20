@@ -8,7 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySQL {
+public class
+
+MySQL {
     public MySQL() {
     }
 
