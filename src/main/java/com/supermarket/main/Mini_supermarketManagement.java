@@ -30,7 +30,7 @@ public class Mini_supermarketManagement {
         Thread thread = new Thread(() -> homeGUI = new HomeGUI());
         thread.start();
         loginGUI = new LoginGUI();
-        loginGUI.setVisible(true);
+        loginGUI.setVisible(true);//test tai sao no ko luu
     }
 
     public static void exit(int status) {
