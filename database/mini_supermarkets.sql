@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 17, 2024 at 04:09 AM
+-- Generation Time: Feb 21, 2024 at 08:17 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -42,8 +42,10 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`id`, `username`, `password`, `role_id`, `staff_id`, `last_signed_in`, `deleted`) VALUES
-(1, 'admin', '$2a$12$SZB/1vXADdqe.9TNF41z4.1HDXdmzc74Ts6vmWvRKTm6Ji6/P.1lW', 1, 1, '2023-12-14 22:11:35.017008', b'0'),
-(2, 'longbott', '$2a$12$HFoTs4o0lCrdCECFaM6xGuS5ZUTriWifilWSEcjT7HHksytiJewvq', 2, 4, '2024-01-17 10:08:05.408499', b'0');
+(1, 'admin', '$2a$12$SZB/1vXADdqe.9TNF41z4.1HDXdmzc74Ts6vmWvRKTm6Ji6/P.1lW', 1, 1, '2024-02-21 14:12:07.780002', b'0'),
+(2, 'longbott', '$2a$12$HFoTs4o0lCrdCECFaM6xGuS5ZUTriWifilWSEcjT7HHksytiJewvq', 2, 4, '2024-02-21 14:12:25.305867', b'0'),
+(3, 'nvbanhang', '$2a$12$HFoTs4o0lCrdCECFaM6xGuS5ZUTriWifilWSEcjT7HHksytiJewvq', 3, 5, '2024-02-21 14:12:40.539228', b'0'),
+(4, 'nvkho', '$2a$12$HFoTs4o0lCrdCECFaM6xGuS5ZUTriWifilWSEcjT7HHksytiJewvq', 4, 6, '2024-02-21 14:12:50.674429', b'0');
 
 -- --------------------------------------------------------
 
@@ -255,7 +257,7 @@ INSERT INTO `discount` (`id`, `percent`, `start_date`, `end_date`, `status`) VAL
 (4, 15, '2023-11-15', '2023-11-30', b'1'),
 (5, 50, '2023-11-22', '2023-12-29', b'1'),
 (6, 20, '2024-01-17', '2024-01-19', b'1'),
-(7, 25, '2024-01-17', '2024-01-20', b'0');
+(7, 25, '2024-01-17', '2024-01-20', b'1');
 
 -- --------------------------------------------------------
 
@@ -286,12 +288,12 @@ INSERT INTO `discount_detail` (`discount_id`, `product_id`, `status`) VALUES
 (4, 6, b'1'),
 (5, 5, b'1'),
 (5, 6, b'1'),
-(6, 1, b'0'),
-(6, 7, b'0'),
-(7, 1, b'0'),
-(7, 2, b'0'),
-(7, 4, b'0'),
-(7, 5, b'0');
+(6, 1, b'1'),
+(6, 7, b'1'),
+(7, 1, b'1'),
+(7, 2, b'1'),
+(7, 4, b'1'),
+(7, 5, b'1');
 
 -- --------------------------------------------------------
 
