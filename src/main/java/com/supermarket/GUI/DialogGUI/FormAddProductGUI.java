@@ -197,7 +197,7 @@ public class FormAddProductGUI extends DialogForm{
                 refresh();
             }
         });
-        containerButton.add(buttonCancel);
+        //containerButton.add(buttonCancel);
 
         buttonAdd.setPreferredSize(new Dimension(100,40));
         buttonAdd.setFont(new Font("FlatLaf.style", Font.BOLD, 15));
