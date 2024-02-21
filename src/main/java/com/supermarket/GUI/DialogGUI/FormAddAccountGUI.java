@@ -66,13 +66,15 @@ public class FormAddAccountGUI extends DialogForm{
         formDetail.setBackground(new Color(0xFFBDD2DB));
         formDetail.setLayout(new MigLayout("", "50[]20[]10", "20[]20[]"));
 
-        for (String string : new String[]{"Mã tài khoản:", "Tên tài khoản:", "Mã chức vụ:", "Lần đăng nhập cuối:", "Mã nhân viên:"}) {
-            JLabel label = new JLabel();
-            label.setPreferredSize(new Dimension(170, 30));
-            label.setText(string);
-            label.setFont((new Font("FlatLaf.style", Font.PLAIN, 16)));
-            attributeAccount.add(label);
-            formDetail.add(label);
+        for (String string : new String[]{"Mã tài khoản:", "Tên tài khoản:","Mật khẩu:", "Mã chức vụ:", "Lần đăng nhập cuối:", "Mã nhân viên:"}) {
+            if(string != "Lần đăng nhập cuối:"){
+                JLabel label = new JLabel();
+                label.setPreferredSize(new Dimension(170, 30));
+                label.setText(string);
+                label.setFont((new Font("FlatLaf.style", Font.PLAIN, 16)));
+                attributeAccount.add(label);
+                formDetail.add(label);
+            }
 
             JTextField textField = new JTextField();
             if (string.equals("Mã tài khoản:")) {
@@ -89,7 +91,10 @@ public class FormAddAccountGUI extends DialogForm{
                 textField.setEnabled(false);
             }
             if (string.equals("Lần đăng nhập cuối:")) {
-                textField.setEnabled(false);
+                jTextFieldAccount.remove(textField);
+                formDetail.remove(textField);
+                formDetail.revalidate();
+                formDetail.repaint();
             }
             if (string.equals("Mã nhân viên:")) {
                 textField.addMouseListener(new MouseAdapter() {
@@ -102,8 +107,10 @@ public class FormAddAccountGUI extends DialogForm{
             }
             textField.setPreferredSize(new Dimension(400, 50));
             textField.setFont((new Font("FlatLaf.style", Font.BOLD, 14)));
-            jTextFieldAccount.add(textField);
-            formDetail.add(textField, "wrap");
+            if(!string.equals("Lần đăng nhập cuối:")){
+                jTextFieldAccount.add(textField);
+                formDetail.add(textField, "wrap");
+            }
         }
 
         buttonCancel.setPreferredSize(new Dimension(100,40));
@@ -135,12 +142,11 @@ public class FormAddAccountGUI extends DialogForm{
             }
         });
         containerButton.add(buttonAdd);
-
     }
 
     private void addAccount() {
         for (int i = 0; i < jTextFieldAccount.size(); i++) {
-            if (i != 3 && jTextFieldAccount.get(i).getText().isEmpty()) {
+            if (jTextFieldAccount.get(i).getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin tài khoản.",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -149,10 +155,11 @@ public class FormAddAccountGUI extends DialogForm{
 
         int id = Integer.parseInt(jTextFieldAccount.get(0).getText());
         String username = jTextFieldAccount.get(1).getText();
-        int roleID = Integer.parseInt(jTextFieldAccount.get(2).getText());
+        String password = jTextFieldAccount.get(2).getText();
+        int roleID = Integer.parseInt(jTextFieldAccount.get(3).getText());
         int staffID = Integer.parseInt(jTextFieldAccount.get(4).getText());
 
-        Account account = new Account(id, username, "", roleID, staffID, DateTime.parseDateTime(String.valueOf(new DateTime())), false);
+        Account account = new Account(id, username, password, roleID, staffID, DateTime.parseDateTime(String.valueOf(new DateTime())), false);
 
         String[] options = new String[]{"Huỷ", "Xác nhận"};
             int choice = JOptionPane.showOptionDialog(null, "Xác nhận thêm tài khoản?",
@@ -209,8 +216,8 @@ public class FormAddAccountGUI extends DialogForm{
         containerTable.add(dataTable.getTableHeader(), BorderLayout.NORTH);
         containerTable.add(dataTable, BorderLayout.CENTER);
 
-        if (!jTextFieldAccount.get(2).getText().isEmpty()) {
-            Role role = roleBLL.findRolesBy(Map.of("id", Integer.parseInt(jTextFieldAccount.get(2).getText()))).get(0);
+        if (!jTextFieldAccount.get(3).getText().isEmpty()) {
+            Role role = roleBLL.findRolesBy(Map.of("id", Integer.parseInt(jTextFieldAccount.get(3).getText()))).get(0);
             int index = roleBLL.getIndex(role, "id", roleBLL.getRoleList());
             dataTable.setRowSelectionInterval(index, index);
         }
@@ -227,9 +234,9 @@ public class FormAddAccountGUI extends DialogForm{
         int indexRow = dataTable.getSelectedRow();
         id = model.getDataVector().elementAt(indexRow).get(0).toString();
         if (flag) {
-            jTextFieldAccount.get(2).setEnabled(true);
-            jTextFieldAccount.get(2).setText(id);
-            jTextFieldAccount.get(2).setEnabled(false);
+            jTextFieldAccount.get(3).setEnabled(true);
+            jTextFieldAccount.get(3).setText(id);
+            jTextFieldAccount.get(3).setEnabled(false);
         } else {
             jTextFieldAccount.get(4).setEnabled(true);
             jTextFieldAccount.get(4).setText(id);
